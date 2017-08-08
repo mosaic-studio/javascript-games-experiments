@@ -1,4 +1,5 @@
-var context = document.getElementById('canvas').getContext('2d');
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
 
 context.font = "30px Arial";
 
