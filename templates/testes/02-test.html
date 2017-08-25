@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body{ background-color: ivory; }
+        #canvas{border:1px solid red; }
+    </style>
+</head>
+<body>
+<h4>Move mouse to reveal image with "flashlight"</h4>
+<canvas id="canvas" width=800 height=800></canvas>
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
+<script>
+    var canvas=document.getElementById("canvas");
+    var ctx=canvas.getContext("2d");
+    var cw=canvas.width;
+    var ch=canvas.height;
+    function reOffset(){
+        var BB=canvas.getBoundingClientRect();
+        offsetX=BB.left;
+        offsetY=BB.top;
+    }
+    var offsetX,offsetY;
+    reOffset();
+    window.onscroll=function(e){ reOffset(); };
+    window.onresize=function(e){ reOffset(); };
+
+    $("#canvas").mousemove(function(e){handleMouseMove(e);});
+
+    var radius=30;
+
+    var img=new Image();
+    img.onload=function(){
+        draw(150,150,30);
+    };
+    img.src='https://s3.amazonaws.com/indieobscura-www/assets/article/2017/05/17/7-actors-who-could-play-Geralt-Netflix-The-Witcher_feature.jpg';
+
+    function draw(cx,cy,radius){
+        ctx.save();
+        ctx.clearRect(0,0,cw,ch);
+        var radialGradient = ctx.createRadialGradient(cx, cy, 1, cx, cy, radius);
+        radialGradient.addColorStop(0, 'rgba(0,0,0,1)');
+        radialGradient.addColorStop(.65, 'rgba(0,0,0,1)');
+        radialGradient.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.beginPath();
+        ctx.arc(cx,cy,radius,0,Math.PI*2);
+        ctx.fillStyle=radialGradient;
+        ctx.fill();
+        ctx.globalCompositeOperation='source-atop';
+        ctx.drawImage(img,0,0);
+        ctx.globalCompositeOperation='destination-over';
+        ctx.fillStyle='black';
+        ctx.fillRect(0,0,cw,ch);
+        ctx.restore();
+    }
+
+
+    function handleMouseMove(e){
+
+        // tell the browser we're handling this event
+        e.preventDefault();
+        e.stopPropagation();
+
+        mouseX=parseInt(e.clientX-offsetX);
+        mouseY=parseInt(e.clientY-offsetY);
+
+        draw(mouseX,mouseY,30);
+
+    }
+</script>
+</body>
+</html>
